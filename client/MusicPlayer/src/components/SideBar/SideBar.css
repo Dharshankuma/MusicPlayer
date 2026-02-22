@@ -1,0 +1,43 @@
+.sidebar-container {
+  color: #b3b3b3;
+}
+
+.nav-link {
+  color: #b3b3b3 !important;
+  font-weight: 600;
+  padding: 8px 0;
+  transition: color 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #fff !important;
+}
+
+.btn-sidebar {
+  background: none;
+  border: none;
+  color: #b3b3b3;
+  padding: 0;
+  font-weight: 600;
+  transition: color 0.2s;
+  width: 100%;
+  text-align: left;
+}
+
+.btn-sidebar:hover {
+  color: #fff;
+}
+
+.icon-box {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+
+.bg-gradient-heart {
+  background: linear-gradient(135deg, #450af5, #c4efd9);
+}
