@@ -1,4 +1,8 @@
-const { getAllSongs, gridFilterSongs } = require("../services/songService");
+const {
+  getAllSongs,
+  gridFilterSongs,
+  streamSongService,
+} = require("../services/songService");
 const { gridFilterDTO } = require("../dto/allDTO");
 
 const fetchSongs = async (req, res) => {
@@ -24,9 +28,39 @@ const fetchSongs = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch songs",
-      error: error.message,
+      error: err.message,
     });
   }
 };
 
-module.exports = { fetchSongs };
+const playSongs = async (req, res) => {
+  try {
+    const { song } = req.params;
+    const range = req.headers.range;
+
+    const result = await streamSongService(song, range);
+
+    if (!result.stream) {
+      return res.status(result.status).json({
+        message: result.message || "Unable to stream music",
+      });
+    }
+
+    res.writeHead(result.status, result.headers);
+
+    result.stream.pipe(res);
+
+    result.stream.on("error", (err) => {
+      console.error("Stream Error: ", err);
+      res.end();
+    });
+  } catch (err) {
+    console.error("Error occured : ", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to play song",
+      error: err.message,
+    });
+  }
+};
+module.exports = { fetchSongs, playSongs };

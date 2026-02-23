@@ -1,4 +1,5 @@
 const fs = require("fs/promises");
+const fsSync = require("fs");
 const path = require("path");
 const mm = require("music-metadata");
 const { formatDuration } = require("../helper/helper");
@@ -77,4 +78,63 @@ const gridFilterSongs = (songs, query) => {
   };
 };
 
-module.exports = { getAllSongs, gridFilterSongs };
+const streamSongService = async (song, range) => {
+  const songPath = path.join(downloadPath, song);
+
+  try {
+    await fs.access(songPath);
+  } catch {
+    return {
+      status: 404,
+      stream: null,
+      message: "Song not found",
+    };
+  }
+
+  const stat = await fs.stat(songPath);
+  const fileSize = stat.size;
+
+  if (!range) {
+    return {
+      status: 400,
+      headers: {},
+      stream: null,
+      message: "Range Required",
+    };
+  }
+
+  const parts = range.replace(/bytes=/, "").split("-");
+  const start = parseInt(parts[0], 10);
+
+  if (isNaN(start)) {
+    return {
+      status: 400,
+      stream: null,
+      message: "Invalid Range header",
+    };
+  }
+
+  const end = parts[1]
+    ? Math.min(parseInt(parts[1], 10), fileSize - 1)
+    : fileSize - 1;
+
+  const chunkSize = end - start + 1;
+
+  const fileStream = fsSync.createReadStream(songPath, {
+    start,
+    end,
+  });
+
+  return {
+    status: 206,
+    headers: {
+      "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+      "Accept-Range": "bytes",
+      "Content-Length": chunkSize,
+      "Content-Type": "audio/mpeg",
+    },
+    stream: fileStream,
+  };
+};
+
+module.exports = { getAllSongs, gridFilterSongs, streamSongService };
