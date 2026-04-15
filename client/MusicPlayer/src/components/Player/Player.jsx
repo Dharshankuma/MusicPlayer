@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Play,
   SkipBack,
@@ -6,15 +6,21 @@ import {
   Repeat,
   Shuffle,
   Volume2,
-  Mic2,
-  ListMusic,
-  MonitorSpeaker,
+  ChevronDown
 } from "lucide-react";
 import "./Player.css";
+import ExpandedPlayer from "../ReusableComponents/ExpandPlayer"
 
-const Player = () => {
+const PlayerBar = ({ onExpand }) => {
+  const handleControlClick = (e) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className="player-container px-4 h-100 d-flex flex-column flex-md-row align-items-center justify-content-between">
+    <div
+      className="player-container px-4 h-100 d-flex flex-column flex-md-row align-items-center justify-content-between"
+      onClick={onExpand}
+    >
       {/* Song Info */}
       <div className="d-flex align-items-center song-info-section">
         <img
@@ -30,11 +36,14 @@ const Player = () => {
       </div>
 
       {/* Controls */}
-      <div className="controls-section d-flex flex-column align-items-center">
+      <div
+        className="controls-section d-none d-md-flex flex-column align-items-center"
+        onClick={handleControlClick}
+      >
         <div className="d-flex align-items-center gap-4 mb-1">
-          <button className="btn-icon text-secondary">
+          {/* <button className="btn-icon text-secondary">
             <Shuffle size={18} />
-          </button>
+          </button> */}
           <button className="btn-icon text-secondary">
             <SkipBack size={20} fill="currentColor" />
           </button>
@@ -44,9 +53,9 @@ const Player = () => {
           <button className="btn-icon text-secondary">
             <SkipForward size={20} fill="currentColor" />
           </button>
-          <button className="btn-icon text-secondary">
+          {/* <button className="btn-icon text-secondary">
             <Repeat size={18} />
-          </button>
+          </button> */}
         </div>
         <div className="progress-container d-flex align-items-center gap-2 w-100">
           <span className="time-text">1:24</span>
@@ -58,24 +67,38 @@ const Player = () => {
       </div>
 
       {/* Volume & Extras */}
-      <div className="extras-section d-none d-md-flex align-items-center gap-3">
-        <button className="btn-icon text-secondary">
-          <Mic2 size={16} />
-        </button>
-        <button className="btn-icon text-secondary">
-          <ListMusic size={16} />
-        </button>
-        <button className="btn-icon text-secondary">
-          <MonitorSpeaker size={16} />
-        </button>
-        <div className="volume-bar d-flex align-items-center gap-2">
+      <div
+        className="extras-section d-none d-md-flex align-items-center justify-content-end gap-3"
+        onClick={handleControlClick}
+      >
+        <div className="volume-bar d-flex align-items-center gap-2 w-100 justify-content-end">
           <Volume2 size={16} className="text-secondary" />
           <div className="progress-bar-custom volume-slider">
             <div className="progress-fill" style={{ width: "70%" }}></div>
           </div>
         </div>
       </div>
+
+      {/* Mobile Mini Play Button */}
+      <div className="d-md-none d-flex align-items-center" onClick={handleControlClick}>
+        <button className="btn-icon text-white">
+          <Play size={24} fill="currentColor" />
+        </button>
+      </div>
     </div>
+  );
+};
+
+
+
+const Player = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <>
+      <PlayerBar onExpand={() => setIsExpanded(true)} />
+      <ExpandedPlayer isExpanded={isExpanded} onClose={() => setIsExpanded(false)} />
+    </>
   );
 };
 
