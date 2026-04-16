@@ -6,6 +6,8 @@ import "./App.css";
 
 function App() {
   const [activeTab, setActiveTab] = useState("home");
+  const [selectedSong, setSelectedSong] = useState(null);
+  const [isSongLoading, setIsSongLoading] = useState(false);
 
   return (
     <div className="app-container bg-dark text-light">
@@ -18,14 +20,22 @@ function App() {
 
           {/* Main Content */}
           <div className="col-12 col-md-9 col-lg-10 main-content">
-            <Home activeTab={activeTab} />
+            <Home 
+              activeTab={activeTab} 
+              onSongSelect={(song) => {
+                setSelectedSong(song);
+                setIsSongLoading(true);
+                // Simulate loading when song is selected
+                setTimeout(() => setIsSongLoading(false), 1500); 
+              }} 
+            />
           </div>
         </div>
       </div>
 
       {/* Fixed Player */}
       <div className="player-wrapper fixed-bottom">
-        <Player />
+        <Player selectedSong={selectedSong} isSongLoading={isSongLoading} />
       </div>
     </div>
   );

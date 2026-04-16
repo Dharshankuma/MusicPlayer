@@ -1,26 +1,18 @@
 const {
   getAllSongs,
   gridFilterSongs,
-  streamSongService,
+  streamSong,
 } = require("../services/songService");
-const { gridFilterDTO } = require("../dto/allDTO");
 
 const fetchSongs = async (req, res) => {
   try {
-    const queryParams = gridFilterDTO(req.query);
-    const songs = await getAllSongs();
-
-    const result = await gridFilterSongs(songs, queryParams);
-
-    console.log(result);
-
+    const search = req.query.search || "";
+    console.log(search);
+    const songs = await getAllSongs(search);
     return res.status(201).json({
       success: true,
       message: "Successfully fetched Songs",
-      totalSongs: result.total,
-      totalPages: result.totalPages,
-      currentPage: result.currentPage,
-      data: result.data,
+      data: songs,
     });
   } catch (err) {
     console.error("Error Fetching Songs: ", err);
@@ -38,7 +30,7 @@ const playSongs = async (req, res) => {
     const { song } = req.params;
     const range = req.headers.range;
 
-    const result = await streamSongService(song, range);
+    const result = await streamSong(song, range);
 
     if (!result.stream) {
       return res.status(result.status).json({
@@ -63,4 +55,5 @@ const playSongs = async (req, res) => {
     });
   }
 };
+
 module.exports = { fetchSongs, playSongs };
