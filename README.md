@@ -94,7 +94,7 @@ Frontend UI and integration were implemented using **AI-assisted tools**, with m
 ```bash
 cd server
 npm install
-npm start
+npm run dev
 ```
 
 ### 🔹 Frontend
@@ -130,6 +130,3 @@ npm run dev
 
 ---
 
-## 👨‍💻 Author
-
-**Dharshan Muthukumar**
