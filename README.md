@@ -1,6 +1,6 @@
 # 🎵 Music Streaming Web App
 
-A full-stack music streaming application built using **React (Vite)** and **Express.js**, supporting real-time audio playback using HTTP range-based streaming.
+A full-stack music streaming application built using **React (Vite)** and **Express.js**, supporting real-time audio playback via HTTP range-based streaming. The application streams music files directly from a local system folder (downloads).
 
 ---
 
