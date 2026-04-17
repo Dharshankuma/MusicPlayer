@@ -2,12 +2,29 @@ import React, { useState } from "react";
 import Sidebar from "./components/SideBar/SideBar";
 import Home from "./components/Home/Home";
 import Player from "./components/Player/Player";
+import { useAudioPlayer } from "./hooks/useAudioPlayer";
 import "./App.css";
 
 function App() {
   const [activeTab, setActiveTab] = useState("home");
-  const [selectedSong, setSelectedSong] = useState(null);
-  const [isSongLoading, setIsSongLoading] = useState(false);
+
+  // Custom hook manages streaming, state, and native HTML5 Audio globally
+  const { 
+    selectedSong, 
+    isPlaying, 
+    isSongLoading, 
+    playSong, 
+    togglePlay, 
+    handleNext, 
+    handlePrev,
+    currentTime,
+    duration,
+    volume,
+    seek,
+    setVolume,
+    hasNext,
+    hasPrev
+  } = useAudioPlayer();
 
   return (
     <div className="app-container bg-dark text-light">
@@ -20,14 +37,9 @@ function App() {
 
           {/* Main Content */}
           <div className="col-12 col-md-9 col-lg-10 main-content">
-            <Home 
-              activeTab={activeTab} 
-              onSongSelect={(song) => {
-                setSelectedSong(song);
-                setIsSongLoading(true);
-                // Simulate loading when song is selected
-                setTimeout(() => setIsSongLoading(false), 1500); 
-              }} 
+            <Home
+              activeTab={activeTab}
+              onSongSelect={playSong}
             />
           </div>
         </div>
@@ -35,7 +47,21 @@ function App() {
 
       {/* Fixed Player */}
       <div className="player-wrapper fixed-bottom">
-        <Player selectedSong={selectedSong} isSongLoading={isSongLoading} />
+        <Player
+          selectedSong={selectedSong}
+          isSongLoading={isSongLoading}
+          isPlaying={isPlaying}
+          togglePlay={togglePlay}
+          handleNext={handleNext}
+          handlePrev={handlePrev}
+          currentTime={currentTime}
+          duration={duration}
+          volume={volume}
+          seek={seek}
+          setVolume={setVolume}
+          hasNext={hasNext}
+          hasPrev={hasPrev}
+        />
       </div>
     </div>
   );

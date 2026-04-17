@@ -1,5 +1,6 @@
 import {
     Play,
+    Pause,
     SkipBack,
     SkipForward,
     Repeat,
@@ -8,10 +9,28 @@ import {
     ChevronDown
 } from "lucide-react";
 
+const formatTime = (time) => {
+    if (!time || isNaN(time)) return "0:00";
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+};
 
-
-
-const ExpandedPlayer = ({ isExpanded, onClose, selectedSong, isSongLoading }) => {
+const ExpandedPlayer = ({
+    isExpanded,
+    onClose,
+    selectedSong,
+    isSongLoading,
+    isPlaying,
+    togglePlay,
+    handleNext,
+    handlePrev,
+    currentTime,
+    duration,
+    seek,
+    hasNext,
+    hasPrev
+}) => {
     return (
         <div className={`expanded-player-overlay d-flex flex-column ${isExpanded ? "show" : ""}`}>
             {/* Header */}
@@ -45,7 +64,7 @@ const ExpandedPlayer = ({ isExpanded, onClose, selectedSong, isSongLoading }) =>
                 )}
 
                 <div className="d-flex flex-column align-items-center text-center mb-4 w-100" style={{ maxWidth: "400px" }}>
-                    <h2 className="text-white fw-bold mb-1">
+                    <h2 className="text-white fw-bold mb-1" style={{ fontSize: "18px" }}>
                         {isSongLoading ? "Loading..." : selectedSong ? selectedSong.title : "Select a song"}
                     </h2>
                     <h5 className="text-secondary mb-0">
@@ -53,27 +72,36 @@ const ExpandedPlayer = ({ isExpanded, onClose, selectedSong, isSongLoading }) =>
                     </h5>
                 </div>
 
-                <div className="w-100 mb-5" style={{ maxWidth: "400px" }}>
+                <div className="w-100 mb-3" style={{ maxWidth: "400px" }}>
                     <div className="progress-container d-flex align-items-center gap-2 w-100">
-                        <span className="time-text text-secondary">0:00</span>
-                        <div className="progress-bar-custom flex-grow-1">
-                            <div className="progress-fill" style={{ width: "0%" }}></div>
+                        <span className="time-text text-secondary">{formatTime(currentTime)}</span>
+                        <div
+                            className="progress-bar-custom flex-grow-1"
+                            onClick={(e) => {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                const percent = ((e.clientX - rect.left) / rect.width) * 100;
+                                seek(percent);
+                            }}
+                        >
+                            <div className="progress-fill" style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}></div>
                         </div>
-                        <span className="time-text text-secondary">{selectedSong ? selectedSong.duration || "0:00" : "0:00"}</span>
+                        <span className="time-text text-secondary">{formatTime(duration)}</span>
                     </div>
                 </div>
 
                 <div className="d-flex align-items-center justify-content-between w-100 mb-5 px-3" style={{ maxWidth: "400px" }}>
                     <button className="btn-icon text-secondary" disabled={!selectedSong}><Shuffle size={24} /></button>
-                    <button className="btn-icon text-white" disabled={!selectedSong}><SkipBack size={32} fill="currentColor" /></button>
-                    <button className="btn-play-large shadow-lg d-flex align-items-center justify-content-center rounded-circle bg-white text-dark" disabled={!selectedSong || isSongLoading}>
+                    <button className="btn-icon text-white" disabled={!selectedSong || !hasPrev} onClick={handlePrev}><SkipBack size={32} fill="currentColor" /></button>
+                    <button className="btn-play-large shadow-lg d-flex align-items-center justify-content-center rounded-circle bg-white text-dark" disabled={!selectedSong || isSongLoading} onClick={togglePlay}>
                         {isSongLoading ? (
                             <div className="spinner-border spinner-border-sm text-dark ms-1" role="status"></div>
+                        ) : isPlaying ? (
+                            <Pause size={28} fill="black" className="ms-1" />
                         ) : (
                             <Play size={28} fill="black" className="ms-1" />
                         )}
                     </button>
-                    <button className="btn-icon text-white" disabled={!selectedSong}><SkipForward size={32} fill="currentColor" /></button>
+                    <button className="btn-icon text-white" disabled={!selectedSong || !hasNext} onClick={handleNext}><SkipForward size={32} fill="currentColor" /></button>
                     <button className="btn-icon text-secondary" disabled={!selectedSong}><Repeat size={24} /></button>
                 </div>
             </div>

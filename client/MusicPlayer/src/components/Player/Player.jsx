@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   Play,
+  Pause,
   SkipBack,
   SkipForward,
   Repeat,
@@ -11,7 +12,29 @@ import {
 import "./Player.css";
 import ExpandedPlayer from "../ReusableComponents/ExpandPlayer"
 
-const PlayerBar = ({ onExpand, selectedSong, isSongLoading }) => {
+const formatTime = (time) => {
+  if (!time || isNaN(time)) return "0:00";
+  const m = Math.floor(time / 60);
+  const s = Math.floor(time % 60);
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+};
+
+const PlayerBar = ({ 
+  onExpand, 
+  selectedSong, 
+  isSongLoading, 
+  isPlaying, 
+  togglePlay, 
+  handleNext, 
+  handlePrev,
+  currentTime,
+  duration,
+  volume,
+  seek,
+  setVolume,
+  hasNext,
+  hasPrev
+}) => {
   const handleControlClick = (e) => {
     e.stopPropagation();
   };
@@ -68,19 +91,21 @@ const PlayerBar = ({ onExpand, selectedSong, isSongLoading }) => {
           {/* <button className="btn-icon text-secondary">
             <Shuffle size={18} />
           </button> */}
-          <button className="btn-icon text-secondary" disabled={!selectedSong || isSongLoading}>
+          <button className="btn-icon text-secondary" disabled={!selectedSong || isSongLoading || !hasPrev} onClick={handlePrev}>
             <SkipBack size={20} fill="currentColor" />
           </button>
-          <button className="btn-play" disabled={!selectedSong || isSongLoading}>
+          <button className="btn-play" disabled={!selectedSong || isSongLoading} onClick={togglePlay}>
             {isSongLoading ? (
                <div className="spinner-border spinner-border-sm text-dark" role="status">
                  <span className="visually-hidden">Loading...</span>
                </div>
+            ) : isPlaying ? (
+               <Pause size={20} fill="black" />
             ) : (
                <Play size={20} fill="black" />
             )}
           </button>
-          <button className="btn-icon text-secondary" disabled={!selectedSong || isSongLoading}>
+          <button className="btn-icon text-secondary" disabled={!selectedSong || isSongLoading || !hasNext} onClick={handleNext}>
             <SkipForward size={20} fill="currentColor" />
           </button>
           {/* <button className="btn-icon text-secondary">
@@ -88,11 +113,18 @@ const PlayerBar = ({ onExpand, selectedSong, isSongLoading }) => {
           </button> */}
         </div>
         <div className="progress-container d-flex align-items-center gap-2 w-100">
-          <span className="time-text">0:00</span>
-          <div className="progress-bar-custom flex-grow-1">
-            <div className="progress-fill" style={{ width: "0%" }}></div>
+          <span className="time-text">{formatTime(currentTime)}</span>
+          <div 
+             className="progress-bar-custom flex-grow-1" 
+             onClick={(e) => {
+               const rect = e.currentTarget.getBoundingClientRect();
+               const percent = ((e.clientX - rect.left) / rect.width) * 100;
+               seek(percent);
+             }}
+          >
+            <div className="progress-fill" style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}></div>
           </div>
-          <span className="time-text">{selectedSong ? selectedSong.duration || "0:00" : "0:00"}</span>
+          <span className="time-text">{formatTime(duration)}</span>
         </div>
       </div>
 
@@ -103,17 +135,26 @@ const PlayerBar = ({ onExpand, selectedSong, isSongLoading }) => {
       >
         <div className="volume-bar d-flex align-items-center gap-2 w-100 justify-content-end">
           <Volume2 size={16} className="text-secondary" />
-          <div className="progress-bar-custom volume-slider">
-            <div className="progress-fill" style={{ width: "70%" }}></div>
+          <div 
+             className="progress-bar-custom volume-slider"
+             onClick={(e) => {
+               const rect = e.currentTarget.getBoundingClientRect();
+               const val = (e.clientX - rect.left) / rect.width;
+               setVolume(Math.max(0, Math.min(1, val)));
+             }}
+          >
+            <div className="progress-fill" style={{ width: `${volume * 100}%` }}></div>
           </div>
         </div>
       </div>
 
       {/* Mobile Mini Play Button */}
       <div className="d-md-none d-flex align-items-center" onClick={handleControlClick}>
-        <button className="btn-icon text-white" disabled={!selectedSong || isSongLoading}>
+        <button className="btn-icon text-white" disabled={!selectedSong || isSongLoading} onClick={togglePlay}>
           {isSongLoading ? (
             <div className="spinner-border spinner-border-sm text-light" role="status"></div>
+          ) : isPlaying ? (
+            <Pause size={24} fill="currentColor" />
           ) : (
             <Play size={24} fill="currentColor" />
           )}
@@ -125,7 +166,21 @@ const PlayerBar = ({ onExpand, selectedSong, isSongLoading }) => {
 
 
 
-const Player = ({ selectedSong, isSongLoading }) => {
+const Player = ({ 
+  selectedSong, 
+  isSongLoading, 
+  isPlaying, 
+  togglePlay, 
+  handleNext, 
+  handlePrev,
+  currentTime,
+  duration,
+  volume,
+  seek,
+  setVolume,
+  hasNext,
+  hasPrev
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -133,13 +188,33 @@ const Player = ({ selectedSong, isSongLoading }) => {
       <PlayerBar 
         onExpand={() => setIsExpanded(true)} 
         selectedSong={selectedSong} 
-        isSongLoading={isSongLoading} 
+        isSongLoading={isSongLoading}
+        isPlaying={isPlaying}
+        togglePlay={togglePlay}
+        handleNext={handleNext}
+        handlePrev={handlePrev}
+        currentTime={currentTime}
+        duration={duration}
+        volume={volume}
+        seek={seek}
+        setVolume={setVolume}
+        hasNext={hasNext}
+        hasPrev={hasPrev}
       />
       <ExpandedPlayer 
         isExpanded={isExpanded} 
         onClose={() => setIsExpanded(false)} 
         selectedSong={selectedSong}
         isSongLoading={isSongLoading}
+        isPlaying={isPlaying}
+        togglePlay={togglePlay}
+        handleNext={handleNext}
+        handlePrev={handlePrev}
+        currentTime={currentTime}
+        duration={duration}
+        seek={seek}
+        hasNext={hasNext}
+        hasPrev={hasPrev}
       />
     </>
   );

@@ -114,17 +114,21 @@ const streamSong = async (song, range) => {
   const stat = await fs.stat(songPath);
   const fileSize = stat.size;
 
+  const stream = fsSync.createReadStream(songPath);
   if (!range) {
     return {
-      status: 400,
-      headers: {},
-      stream: null,
-      message: "Range Required",
+      status: 200,
+      headers: {
+        "Content-Length": fileSize,
+        "Content-Type": "audio/mpeg",
+        "Accept-Ranges": "bytes",
+      },
+      stream: stream,
     };
   }
 
   const parts = range.replace(/bytes=/, "").split("-");
-  const start = path.parseInt(parts[0], 10);
+  const start = parseInt(parts[0], 10);
 
   if (isNaN(start)) {
     return {
@@ -140,7 +144,7 @@ const streamSong = async (song, range) => {
 
   const chunkSize = end - start + 1;
 
-  const fileStream = fs.createReadStream(songPath, {
+  const fileStream = fsSync.createReadStream(songPath, {
     start,
     end,
   });
@@ -149,7 +153,7 @@ const streamSong = async (song, range) => {
     status: 206,
     headers: {
       "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-      "Accept-Range": "bytes",
+      "Accept-Ranges": "bytes",
       "Content-Length": chunkSize,
       "Content-Type": "audio/mpeg",
     },

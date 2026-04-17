@@ -4,6 +4,6 @@ const router = express.Router();
 const { fetchSongs, playSongs } = require("../controllers/songController");
 
 router.get("/fetchSongs", fetchSongs);
-router.post("/playSong/:song", playSongs);
+router.get("/playSong/:song", playSongs);
 
 module.exports = router;

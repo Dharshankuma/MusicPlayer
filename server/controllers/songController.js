@@ -27,7 +27,7 @@ const fetchSongs = async (req, res) => {
 
 const playSongs = async (req, res) => {
   try {
-    const { song } = req.params;
+    const song = decodeURIComponent(req.params.song);
     const range = req.headers.range;
 
     const result = await streamSong(song, range);

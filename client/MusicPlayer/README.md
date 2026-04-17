@@ -1,16 +1,132 @@
-# React + Vite
+# 🎵 Music Streaming Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack music streaming application built using **React (Vite)** and **Express.js**, supporting real-time audio playback using HTTP range-based streaming.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+* 🎧 Stream audio using **HTTP Range Requests (206 Partial Content)**
+* ⏯ **Play / Pause / Next / Previous** controls
+* 📊 Real-time **progress tracking (current time & duration)**
+* 🔊 **Volume control**
+* 🔁 Auto-play next song in playlist
+* 🔍 Dynamic **song search**
+* 📱 Responsive UI (mini player + expanded player)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🧠 Project Approach
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This project was developed using a combination of:
+
+* **Manual backend implementation** (core streaming logic)
+* **AI-assisted frontend development (Antigravity)**
+
+The backend was built from scratch to understand how real-world media streaming works, while the frontend and integration were generated and refined using AI tools, followed by manual debugging and validation.
+
+---
+
+## ⚙️ Backend (Core Focus)
+
+* Built with **Express.js**
+* Implements streaming using:
+
+  * `fs.createReadStream`
+  * HTTP **Range headers**
+* Supports:
+
+  * Partial content responses (**206**)
+  * Efficient memory usage
+  * Error handling for invalid/missing files
+
+---
+
+## 🎨 Frontend
+
+* Built with **React (Vite)**
+* Uses **HTML5 Audio API** for playback
+* Centralized playback logic using a custom hook:
+  `useAudioPlayer`
+
+⚠️ Note:
+Frontend UI and integration were implemented using **AI-assisted tools**, with manual debugging and validation.
+
+---
+
+## 🔥 Key Learnings
+
+* Implemented real-world **audio streaming using HTTP range requests**
+* Understood how browsers:
+
+  * Request audio chunks
+  * Buffer and play media
+* Debugged issues like:
+
+  * Range header errors
+  * Streaming failures
+  * Audio playback issues
+* Built a **synchronized UI + audio system**
+* Learned effective use of **AI in development workflows**
+
+---
+
+## 🛠 Tech Stack
+
+**Frontend:**
+
+* React (Vite)
+* Bootstrap / Custom CSS
+* Lucide Icons
+
+**Backend:**
+
+* Node.js
+* Express.js
+* File System (`fs`)
+
+---
+
+## ⚙️ Setup Instructions
+
+### 🔹 Backend
+
+```bash
+cd server
+npm install
+npm start
+```
+
+### 🔹 Frontend
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+---
+
+## ⚙️ How Streaming Works
+
+1. Client requests audio file
+2. Server checks for `Range` header
+3. Responds with:
+
+   * `200 OK` (full file) OR
+   * `206 Partial Content` (chunk)
+4. Browser requests chunks continuously
+5. Audio plays seamlessly 🎵
+
+---
+
+## 📌 Future Improvements
+
+* 🎚 Drag-to-seek functionality
+* 📡 Buffering indicator
+* 🔀 Shuffle & repeat modes
+* ☁️ Cloud integration (Azure / AWS)
+* 📂 Playlist management system
+
+---
+

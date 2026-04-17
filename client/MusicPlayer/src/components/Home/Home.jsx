@@ -96,7 +96,7 @@ const Home = ({ activeTab, onSongSelect }) => {
                 <div
                   key={song.id}
                   className={`song-row d-grid px-3 py-3 rounded mb-1`}
-                  onClick={() => onSongSelect && onSongSelect(song)}
+                  onClick={() => onSongSelect && onSongSelect(song, songs)}
                   style={{ cursor: "pointer" }}
                 >
                   <div className={`col-index fw-medium text-secondary`}>
